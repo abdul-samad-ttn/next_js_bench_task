@@ -9,6 +9,7 @@ const MenuNavigation = () => {
             <li className="hover:text-blue-200"><Link href="/">Home</Link></li>
             <li className="hover:text-blue-200"><Link href="/about">About</Link></li>
             <li className="hover:text-blue-200"><Link href="/posts">Posts</Link></li>
+            <li className="hover:text-blue-200"><Link href="/docs">Docs</Link></li>
         </ul>
     </nav>
     </>
