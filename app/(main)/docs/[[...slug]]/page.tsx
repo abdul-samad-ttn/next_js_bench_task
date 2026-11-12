@@ -52,7 +52,7 @@ const loadDocument = async (slug: string[]) => {
 };
 
 interface DocsPageProps {
-  params: Promise<{ slug: string[] | undefined }>;
+  params: Promise<{ slug?: string[] }>;
 }
 
 const DocsPage = async ({ params }: DocsPageProps) => {

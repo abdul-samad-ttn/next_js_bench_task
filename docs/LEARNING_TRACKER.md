@@ -46,16 +46,16 @@ When you mark something **✅ Done**, add a short note: file path, URL you teste
 |--------|------:|
 | **Points earned** | **29** / 57 |
 | **Overall %** | **51%** |
-| **Milestone** | 51–75% band — *Route groups + posts layout + docs catch-all*; next: `loading.tsx` / `error.tsx` (S1) |
+| **Milestone** | 51–75% band — *Route groups + docs optional catch-all + archive required catch-all*; next: `loading.tsx` / `error.tsx` (S1) |
 | **Modules 100% complete** | **M7** (4/4 ✅), **M2** (7/7 ✅) |
 
-*Last self-assessment date:* **2026-11-12** (route group `(main)` + posts breadcrumb layout; docs `[[...slug]]` + routing articles)
+*Last self-assessment date:* **2026-11-12** (docs `[[...slug]]`; archive `[...slug]` posts list + detail — screenshots)
 
 ---
 
 ## Demo application — verified flows
 
-Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-11-12** (route group, docs hub) + **2025-11-11** (comments flow).
+Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-11-12** (route group, docs hub, **archive**) + **2025-11-11** (comments flow).
 
 | Route | Status | What works |
 |-------|:------:|------------|
@@ -75,10 +75,17 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 | `/docs/routingDocs/intercepting-routing` | ✅ | Intercepting routing article |
 | `/docs/routingDocs/does-not-exist` | ✅ | Missing `.md` → `loadDocument` throws → `notFound()`; docs `not-found.tsx` + **Go back to docs** (screenshot 2026-11-12) |
 | `/docs/random` | ✅ | Wrong slug shape → read fails → same docs 404 UI (screenshot 2026-11-12) |
+| `/archive` | ✅ | Hub — **Archive** + link to **Posts List** (`archive/page.tsx`) (screenshot 2026-11-12) |
+| `/archive/posts` | ✅ | `slug === ['posts']` → `getPosts()` list; links to `/archive/posts/:id` (screenshot 2026-11-12) |
+| `/archive/posts/1` | ✅ | `slug === ['posts','1']` → `getPostById`; title + body (screenshot 2026-11-12) |
+| `/archive/posts/600` | ✅ | Missing post → `notFound()` → **Archive not found** (screenshot 2026-11-12) |
+| `/archive/posts/2/comments` | ✅ (v1) | `length > 2` → `notFound()` (comments not in archive tree yet) |
 
 **End-to-end flow:** Home → Posts → Post detail → Comments list → Comment detail (all via `Link`, `(main)` layout + nav; posts-only breadcrumb under `app/(main)/posts/layout.tsx`).
 
 **Docs flow (2026-11-12):** Nav **Docs** → index → any routing article (`slug` → `routingDocs/<name>.md`); invalid slug → `app/(main)/docs/[[...slug]]/not-found.tsx`.
+
+**Archive flow (2026-11-12):** Nav **Archive** → hub → **`/archive/posts`** (required catch-all) → post detail via **one** `archive/[...slug]/page.tsx` (`slug.length` 1 vs 2); contrast with nested `/posts/[postsId]/…` folders.
 
 **404 flow (happy):** Invalid post on nested comment URL → custom not-found UI with root nav still visible (screenshot **2026-11-11**).
 
@@ -132,7 +139,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
 | 1 | ✅ | File-based routes | `app/(main)/page.tsx`, `app/(main)/about/page.tsx` | Verified `/`, `/about` (screenshots 2026-11-12) |
-| 1 | ✅ | Dynamic segment | `[postsId]`, optional catch-all `[[...slug]]` | `/posts/1`, `/posts/2`; **`/docs`**, `/docs/routingDocs/*` — `app/(main)/docs/[[...slug]]/page.tsx` + `loadDocument(slug.slice(1))` |
+| 1 | ✅ | Dynamic segment | `[postsId]`, `[[...slug]]`, `[...slug]` | Nested `/posts/[postsId]`; optional **`/docs`** + `routingDocs/*`; required **`/archive/posts`**, `/archive/posts/1` — `archive/[...slug]/page.tsx` branches on `slug.length` |
 | 1 | ✅ | Nested dynamic routes | Post → comments → comment detail | Verified `/posts/2/comments`, `/posts/2/comments/6` |
 | 1 | ✅ | Async `params` (Promise) | `await params` in Server Components | Post, comments, `[commentId]` pages |
 | 1 | ✅ | `Link` navigation | Client-side transitions between routes | List → detail → comments → comment |
@@ -167,7 +174,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
 | 1 | ✅ | `notFound()` API | Abort render, HTTP 404 | Post, comments list, comment detail pages |
-| 1 | ✅ | `not-found.tsx` | Segment-specific 404 UI | Posts: `/posts/600/comments/1` → `comments/[commentId]/not-found.tsx`; docs: `docs/[[...slug]]/not-found.tsx` + `notFound()` on missing `.md` |
+| 1 | ✅ | `not-found.tsx` | Segment-specific 404 UI | Posts comment segment; docs + archive `not-found.tsx`; verified `/archive/posts/600` (2026-11-12) |
 | 1 | ✅ | `not-found` vs React import | Framework convention, not a normal import | Learned; comment segment UIs avoid invalid `params` usage |
 | 1 | ⬜ | `loading.tsx` | Instant fallback while segment loads | None in repo |
 | 1 | ⬜ | `<Suspense>` boundaries | Split slow data; works with `cacheComponents` | None |
@@ -279,6 +286,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | S0 | Routing, API layer, 404 basics, Tailwind/CSS modules, full demo navigation | M1, M2, M7 | ✅ 2025-11-11 |
 | S0b | Route group `(main)` + `posts/layout.tsx` breadcrumbs + padding cleanup | M1 | ✅ 2026-11-12 |
 | S0c | Docs `[[...slug]]` hub + five `routingDocs/*.md` articles (fs read, raw Markdown) | M1, M3 | ✅ 2026-11-12 |
+| S0d | Archive hub + `[...slug]` posts list/detail (API reuse, `slug` parsing) | M1, M3 | ✅ 2026-11-12 |
 | S1 | `loading.tsx`, `error.tsx` (404 handling ✅ in code) | M3 | 🔶 **current** |
 | S2 | `generateMetadata`, fetch caching, document prerender behavior | M4 | ⬜ |
 | S3 | `generateStaticParams`, `output: 'export'`, local `out/` test | M5 | ⬜ |
@@ -305,6 +313,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | `useFormStatus` | Pending state for form submit (React / Next forms) |
 | Route group `(name)` | Folder for organization; **not** in the URL |
 | `[[...slug]]` | Optional catch-all — zero or more URL segments (e.g. `/docs` vs `/docs/a/b`) |
+| `[...slug]` | Required catch-all — **one or more** segments (e.g. `/archive/posts`; hub at `archive/page.tsx` for `/archive`) |
 | React `<Activity>` | Hides inactive routes with `display: none` when `cacheComponents` is on |
 
 ---
@@ -319,6 +328,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 2026-11-11 | — | 404 UI verify | Screenshot: `/posts/600/comments/1` → “Comment Not Found” | M3 evidence (no new pts) |
 | 2026-11-12 | — | Route group Lab A | `(main)` group; posts breadcrumb layout; padding cleanup; screenshots `/`, `/about`, `/posts`, `/posts/1` | **+2** → **29** ✅ (M1 segment layout + route group) |
 | 2026-11-12 | — | Docs catch-all lab (S0c) | `docs/[[...slug]]/page.tsx`; `routingDocs/` (5 articles); index at `/docs`; raw `<pre>` Markdown; `not-found.tsx` | M1/M3 evidence (no new pts — extends existing ✅ rows) |
+| 2026-11-12 | — | Archive catch-all lab (S0d) | `archive/page.tsx` hub; `archive/[...slug]/page.tsx` list + detail; NaN + missing post → `notFound()`; screenshots hub, list, `/archive/posts/1` | M1/M3 evidence (no new pts) |
 | | | | | |
 
 ---
@@ -327,14 +337,14 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 | Area | Status |
 |------|--------|
-| **Working demo** | ✅ Posts/comments API flow + **docs hub** (`/docs` → five routing articles) |
+| **Working demo** | ✅ Posts/comments flow + **docs hub** + **archive** (`/archive` → `/archive/posts` → post by id) |
 | **Strongest modules** | ✅ **M2** + **M7** complete; M1 (**9/10**), M3 (4/8) |
 | **In progress** | 🔶 S1: `loading.tsx` + `error.tsx` only |
 | **Biggest gaps** | ⬜ M3 loading/error UI, M4 metadata & static params, M5 deploy; M1 parallel/intercept (⏸️) |
 | **Score** | **29 / 57 (51%)** |
 | **Planned next feature** | ⬜ **S1** first, then **S7** — add comment form (M9) |
 
-**Repo layout (2026-11-12):** `app/layout.tsx` + `app/(main)/` (`page`, `about`, `posts/…`, `docs/[[...slug]]/` + `routingDocs/*.md`, `archive/[...slug]/` stub); `app/components/navigation/` (nav includes **Docs**); `lib/api/` (5 files). No `error.tsx` / `loading.tsx` / M9 forms yet.
+**Repo layout (2026-11-12):** `app/(main)/` includes `posts/…`, `docs/[[...slug]]/` + `routingDocs/*.md`, `archive/page.tsx` + `archive/[...slug]/` (posts v1); nav: Home, About, Posts, Docs, **Archive**; `lib/api/`. No `error.tsx` / `loading.tsx` / M9 forms yet. Archive **v2** (comments under `/archive/posts/…/comments`) not implemented.
 
 **Next 3 actions (recommended):**
 
