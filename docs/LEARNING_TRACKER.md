@@ -73,7 +73,8 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 | `/docs/routingDocs/group-routing` | ✅ | Group routing article |
 | `/docs/routingDocs/parallel-routing` | ✅ | Parallel routing article |
 | `/docs/routingDocs/intercepting-routing` | ✅ | Intercepting routing article |
-| `/docs/routingDocs/invalid-slug` | 🔶 | Docs segment **404** — `not-found.tsx` + link to `/docs` (code path via `loadDocument` → `notFound()`; optional browser check) |
+| `/docs/routingDocs/does-not-exist` | ✅ | Missing `.md` → `loadDocument` throws → `notFound()`; docs `not-found.tsx` + **Go back to docs** (screenshot 2026-11-12) |
+| `/docs/random` | ✅ | Wrong slug shape → read fails → same docs 404 UI (screenshot 2026-11-12) |
 
 **End-to-end flow:** Home → Posts → Post detail → Comments list → Comment detail (all via `Link`, `(main)` layout + nav; posts-only breadcrumb under `app/(main)/posts/layout.tsx`).
 
