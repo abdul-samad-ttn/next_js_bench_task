@@ -1,6 +1,6 @@
 import { getCommentById } from "@/lib/api/comments";
 import { getPostById } from "@/lib/api/posts";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 interface CommentDetailsPageProps {
     params: Promise<{commentId: string, postsId: string}>
@@ -10,6 +10,10 @@ const CommentDetailsPage = async ({params}: CommentDetailsPageProps) =>{
     const { commentId, postsId } = await params;
     const commentData = await getCommentById(Number(commentId));
     const post = await getPostById(Number(postsId));
+
+    if(!post) {
+        redirect(`/posts/${postsId}`)
+    }
 
     if(!commentData || !post || commentData.postId !== Number(postsId)) {
         notFound();

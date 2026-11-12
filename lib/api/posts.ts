@@ -3,6 +3,9 @@ import { Post } from "./types";
 
 const getPosts = async (): Promise<Post[]> => {
     const posts = await apiGet<Post[]>('/posts');
+    if(!posts) {
+        throw new Error("Failed to fetch posts list");
+    }
     return posts;
 }
 

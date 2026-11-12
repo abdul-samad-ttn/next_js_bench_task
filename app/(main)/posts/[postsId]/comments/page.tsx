@@ -1,17 +1,17 @@
 import { getComments } from "@/lib/api/comments";
 import { getPostById } from "@/lib/api/posts";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 const CommentsPage = async ({ params }: { params: Promise<{ postsId: string }> }) => {
     const { postsId } = await params;
 
-    const comments = await getComments(Number(postsId));
-
     const post = await getPostById(Number(postsId))
     if (!post) {
-        notFound();
+        redirect(`/posts/${postsId}`);
     }
+
+    const comments = await getComments(Number(postsId));
     if (!comments || comments.length === 0) {
         notFound();
     }
