@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import path from "node:path";
 import { readFile } from "node:fs/promises";
+import { Suspense } from "react";
+import DocsPageLoading from "./loading";
 
 const ROUTING_DOCS_PATH = path.join(
   process.cwd(),
@@ -64,7 +66,7 @@ interface DocsPageProps {
   params: Promise<{ slug?: string[] }>;
 }
 
-const DocsPage = async ({ params }: DocsPageProps) => {
+const DocsPageContent = async ({ params }: DocsPageProps) => {
   const { slug } = await params;
   if (!slug || !slug?.length) {
     return (
@@ -96,6 +98,14 @@ const DocsPage = async ({ params }: DocsPageProps) => {
       {content}
     </pre>
   );
+}
+
+const DocsPage = async ({ params }: DocsPageProps) => {
+ return (
+  <Suspense fallback={<DocsPageLoading />}>
+    <DocsPageContent params={params} />
+  </Suspense>
+ )
 };
 
 export default DocsPage;

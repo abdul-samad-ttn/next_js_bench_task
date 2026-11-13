@@ -1,6 +1,8 @@
 import { getPostById, getPosts } from "@/lib/api/posts";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import ArchivePageDynamicLoading from "./loading";
 
 export async function generateStaticParams() {
   const posts = await getPosts();
@@ -13,7 +15,7 @@ interface ArchivePageDynamicProps {
   params: Promise<{ slug?: string[] }>;
 }
 
-const ArchivePageDynamic = async ({ params }: ArchivePageDynamicProps) => {
+const ArchivePageDynamicContent = async ({ params }: ArchivePageDynamicProps) => {
   const { slug } = await params;
   if (!slug || !slug.length) {
     return notFound();
@@ -62,6 +64,14 @@ const ArchivePageDynamic = async ({ params }: ArchivePageDynamicProps) => {
     );
   }
   return notFound();
+}
+
+const ArchivePageDynamic = async ({ params }: ArchivePageDynamicProps) => {
+  return (
+    <Suspense fallback={<ArchivePageDynamicLoading />}>
+      <ArchivePageDynamicContent params={params} />
+    </Suspense>
+  )
 };
 
 export default ArchivePageDynamic;
