@@ -6,7 +6,7 @@ export async function generateStaticParams() {
     const posts = await getPosts();
     const params: { postsId: string; commentId: string }[] = [];
   
-    for (const post of posts.slice(0, 5)) {
+    for (const post of posts) {
       const comments = await getComments(post.id);
       for (const c of comments) {
         params.push({ postsId: String(post.id), commentId: String(c.id) });

@@ -4,7 +4,7 @@ Track what you have practiced in this repo, what is left, and how far along you 
 
 **Related doc:** [PLAN_API_STATIC_DEPLOYMENT.md](./PLAN_API_STATIC_DEPLOYMENT.md) (deployment, mock API, GitHub Pages, Actions).
 
-**Stack in this project:** Next.js 16 (App Router), React 19, Tailwind CSS v4, Turbopack, `cacheComponents` + `partialPrefetching` in `next.config.ts`.
+**Stack in this project:** Next.js 16 (App Router), React 19, Tailwind CSS v4, Turbopack. Dev: `cacheComponents` + `partialPrefetching`; **GitHub Pages build** uses `output: 'export'` (those flags omitted when `GITHUB_ACTIONS=true`).
 
 ---
 
@@ -34,22 +34,22 @@ When you mark something **✅ Done**, add a short note: file path, URL you teste
 | M1 — App Router basics | 10 | **9** | 0 | 0 | 1 |
 | M2 — Data & API layer | 7 | **7** | 0 | 0 | 0 |
 | M3 — UX boundaries (loading/error/404) | 8 | **7** | 0 | 1 | 0 |
-| M4 — Caching & metadata | 6 | **1** | 0 | 5 | 0 |
-| M5 — Static export & deploy | 7 | **0** | 0 | 7 | 0 |
+| M4 — Caching & metadata | 6 | **2** | 0 | 4 | 0 |
+| M5 — Static export & deploy | 7 | **5** | 0 | 2 | 0 |
 | M6 — Client vs server & APIs | 4 | **0** | 0 | 3 | 1 |
 | M7 — Layout & navigation patterns | 4 | **4** | 0 | 0 | 0 |
 | M8 — Housekeeping & quality | 5 | **4** | 0 | 1 | 0 |
 | M9 — Forms & add comment | 6 | **0** | 0 | 6 | 0 |
-| **Total** | **57** | **32** | **0** | **24** | **2** |
+| **Total** | **57** | **38** | **0** | **18** | **2** |
 
 | Metric | Value |
 |--------|------:|
-| **Points earned** | **32** / 57 |
-| **Overall %** | **56%** |
-| **Milestone** | 51–75% band — *S1* (error, `loading.tsx`, **Suspense** ✅); next: **global not-found** or **S7** forms |
+| **Points earned** | **38** / 57 |
+| **Overall %** | **67%** |
+| **Milestone** | 51–75% band — **S3 + S4** GitHub Pages live; next: **M9** forms, **global not-found**, or **CI lint** |
 | **Modules 100% complete** | **M7** (4/4 ✅), **M2** (7/7 ✅) |
 
-*Last self-assessment date:* **2026-11-13** (Suspense on post detail + comments list; `components/posts/*`, `components/comments/*`; screenshots)
+*Last self-assessment date:* **2026-11-13** (static export + `deploy-pages.yml`; live **https://abdul-samad-ttn.github.io/next_js_bench_task/**)
 
 ---
 
@@ -129,7 +129,13 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 | Network timeout on fetch | ✅ `fetch` throws → boundary | ✅ when API down (earlier repro) |
 | API 5xx → `error.tsx` | ✅ non-404 throw in `http.ts` | 🔶 optional explicit test |
 | Unknown top-level route → `app/not-found.tsx` | ⬜ | ⬜ |
-| `next build` / static export | ⬜ | ⬜ |
+| `next build` / static export | ✅ | `npm run build:gh-pages` → `out/` (338 routes); CI + local |
+| GitHub Pages (production) | ✅ | Actions deploy; home, posts, comments verified **2026-11-13** |
+| Loaders / Suspense on GHP | ⏸️ | Pre-rendered HTML — no runtime skeleton on static host (expected) |
+
+**Production base URL:** `https://abdul-samad-ttn.github.io/next_js_bench_task/` (project site; `basePath` + `assetPrefix` in `next.config.ts`).
+
+**Local static preview:** copy `out/*` → `.preview/next_js_bench_task/` then `npx serve .preview` (plain `serve out` breaks CSS paths).
 
 ---
 
@@ -144,7 +150,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 **M9 note:** Server Actions + forms need a **Node runtime** (`next dev` / hosted Next). Pure **static export (GitHub Pages)** cannot run Server Actions—you would fall back to client-only submit or a hosted API later.
 
-**You are here:** ✅ S0–S0d + S1 **mostly done** (error, redirect, `loading.tsx`, **Suspense** ✅) → ⬜ global `app/not-found.tsx` + archive `error.tsx` verify → **S7** forms.
+**You are here:** ✅ **S3 + S4** (static export + GitHub Pages deploy) → ⬜ optional **S6** (`ci.yml` lint), **M3** global `not-found`, **S7** forms (Server Actions ≠ GHP).
 
 ---
 
@@ -202,32 +208,32 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 ## M4 — Caching, revalidation & metadata (6)
 
-**Subtotal:** **1** ✅ · 0 🔶 · 5 ⬜ → **1 / 6** points
+**Subtotal:** **2** ✅ · 0 🔶 · 4 ⬜ → **2 / 6** points
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
-| 1 | ✅ | `cacheComponents` / dev cache UX | Runtime data vs prerender; dev overlay | `cacheComponents: true` in `next.config.ts`; “Cache disabled” badge in dev |
+| 1 | ✅ | `cacheComponents` / dev cache UX | Runtime data vs prerender; dev overlay | Dev only (`!(GITHUB_ACTIONS)`); disabled on static export build |
 | 1 | ⬜ | `fetch` cache options | `cache`, `next.revalidate` | Default fetch in `apiGet` |
 | 1 | ⬜ | Tagged revalidation | `revalidateTag` / cache tags (per Next 16 docs) | |
 | 1 | ⬜ | `generateMetadata` | Per-post title, OG fields | Browser tab still generic “Create Next App” on `/posts/2` |
-| 1 | ⬜ | `generateStaticParams` | Prebuild `/posts/[id]` paths | Required for static export |
+| 1 | ✅ | `generateStaticParams` | Prebuild dynamic URLs at build | Five segments: `[postsId]`, comments, `[commentId]` (posts 1–5), `docs/[[...slug]]`, `archive/[...slug]`; `build:gh-pages` **338** pages |
 | 1 | ⬜ | `instant` / route segment config | Opt in/out of instant static (if needed) | |
 
 ---
 
 ## M5 — Static export & deployment (7)
 
-**Subtotal:** **0** ✅ · 7 ⬜ → **0 / 7** points
+**Subtotal:** **5** ✅ · **2** ⬜ → **5 / 7** points
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
-| 1 | ⬜ | `output: 'export'` | `next build` → `out/` | Not in `next.config.ts` yet |
-| 1 | ⬜ | Static export + dynamic routes | Must use `generateStaticParams` | See plan § Phase B |
-| 1 | ⬜ | Build-time vs client fetch | What works on GitHub Pages | Plan § 2.1 |
-| 1 | ⬜ | `basePath` / `assetPrefix` | Project site on `github.io/<repo>/` | If needed for GHP |
-| 1 | ⬜ | GitHub Actions: CI | `lint`, `build` on PR | Not in repo |
-| 1 | ⬜ | GitHub Actions: deploy Pages | Publish `out/` | Plan Phase C |
-| 1 | ⬜ | `.env.example` | Document vars without secrets | |
+| 1 | ✅ | `output: 'export'` | `next build` → `out/` | `next.config.ts` when `GITHUB_ACTIONS=true`; `package.json` `build:gh-pages` |
+| 1 | ✅ | Static export + dynamic routes | Must use `generateStaticParams` | All dynamic `page.tsx` under `(main)`; comment detail prebuilds **first 5 posts** only |
+| 1 | ✅ | Build-time vs client fetch | What works on GitHub Pages | JSONPlaceholder via `API_BASE_URL` in Actions; no Node at runtime; loaders/skeletons dev-oriented |
+| 1 | ✅ | `basePath` / `assetPrefix` | Project site on `github.io/<repo>/` | `/next_js_bench_task`; live site CSS/JS OK on GHP |
+| 1 | ⬜ | GitHub Actions: CI | `lint`, `build` on PR | Only `deploy-pages.yml` today — no `ci.yml` |
+| 1 | ✅ | GitHub Actions: deploy Pages | Publish `out/` | `.github/workflows/deploy-pages.yml`; push `main`; Pages source = GitHub Actions |
+| 1 | ⬜ | `.env.example` | Document vars without secrets | `API_BASE_URL`, `GITHUB_ACTIONS` / local export notes |
 
 ---
 
@@ -291,7 +297,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 1 | ✅ | `lib/` location convention | One canonical root `lib/api/` | All imports `@/lib/api/*`; **no** `app/lib/` folder |
 | 1 | ✅ | Remove debug `console.log` | Clean server logs | No `console.log` under `app/` (verified 2026-11-11) |
 | 1 | ✅ | Retire `app/data/posts.ts` | No local mock if API-only | `app/data/` removed; data via `lib/api` only |
-| 1 | ⬜ | Run lint/typecheck in CI | `npm run lint`, `tsc` | No `.github/workflows` yet |
+| 1 | ⬜ | Run lint/typecheck in CI | `npm run lint`, `tsc` | `deploy-pages.yml` exists; separate **lint on PR** workflow not added |
 
 ---
 
@@ -305,8 +311,8 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | S0d | Archive hub + `[...slug]` posts list/detail (API reuse, `slug` parsing) | M1, M3 | ✅ 2026-11-12 |
 | S1 | `loading.tsx`, `error.tsx`, Suspense (404 + redirect ✅) | M3 | ✅ **2026-11-13** — posts tree `loading.tsx` + **`Suspense`** on post detail + comments list; ⬜ global `not-found`; archive `error.tsx` 🔶 verify |
 | S2 | `generateMetadata`, fetch caching, document prerender behavior | M4 | ⬜ |
-| S3 | `generateStaticParams`, `output: 'export'`, local `out/` test | M5 | ⬜ |
-| S4 | GitHub Actions + Pages (JSONPlaceholder or build-time fetch) | M5 | ⬜ |
+| S3 | `generateStaticParams`, `output: 'export'`, local `out/` test | M5 | ✅ **2026-11-13** — 338 static pages; `.preview/` local serve |
+| S4 | GitHub Actions + Pages (JSONPlaceholder build-time fetch) | M5 | ✅ **2026-11-13** — **https://abdul-samad-ttn.github.io/next_js_bench_task/** |
 | S5 | Client component exercise; optional Route Handlers locally | M6 | ⬜ |
 | S6 | `.env.example` + CI lint/typecheck | M8, M5 | ⬜ *(console.log ✅)* |
 | S7 | Add comment form: Server Action, validation, `revalidatePath` | M9 | ⬜ |
@@ -350,6 +356,8 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 2026-11-12 | — | Comments redirect polish | `comments/page.tsx` + `[commentId]/page.tsx`: `redirect` when `!post`; `/posts/600/comments` → Page Not Found; `archive/[...slug]/error.tsx` scaffolded | M3 evidence (no new pts) |
 | 2026-11-12 | — | S1 segment loading (L1) | Four `loading.tsx` in posts tree; spinner UI on `/posts`, `/posts/1`, `/posts/1/comments`, `/posts/1/comments/1` | **+1** → **31** ✅ (M3 `loading.tsx`) |
 | 2026-11-13 | — | S1 Suspense (L3) | `Suspense` + async components: `components/posts/PostDetailContent`, `PostDetailSkeleton`; `components/comments/CommentsList`, `CommentsListSkeleton`; segment `loading.tsx` kept on list + comment detail | **+1** → **32** ✅ (M3 `<Suspense>`) |
+| 2026-11-13 | — | S3 static export | `generateStaticParams` (posts, comments, docs, archive); export config; `cacheComponents` off on GHP build; local `build:gh-pages` | **+4** → **36** ✅ (M5 rows: export, params, build-time fetch, basePath) |
+| 2026-11-13 | — | S4 GitHub Pages | `deploy-pages.yml`; merge `main`; Pages → GitHub Actions; production smoke test posts + comments | **+2** → **38** ✅ (+1 M5 deploy, +1 M4 `generateStaticParams`) |
 | | | | | |
 
 ---
@@ -358,20 +366,20 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 | Area | Status |
 |------|--------|
-| **Working demo** | ✅ Posts/comments flow + **docs hub** + **archive** (`/archive` → `/archive/posts` → post by id) |
-| **Strongest modules** | ✅ **M2** + **M7** complete; M1 (**9/10**), M3 (**7/8**) |
-| **In progress** | 🔶 archive `error.tsx` verify; optional slim segment loaders on Suspense routes |
-| **Biggest gaps** | ⬜ M3 global not-found, M4 metadata, M5 deploy, M9 forms |
-| **Score** | **32 / 57 (56%)** |
-| **Planned next feature** | ⬜ **S7** (M9 comment form) or **`app/not-found.tsx`** |
+| **Working demo** | ✅ **Dev** (`npm run dev`) + **prod** GHP — posts/comments, docs, archive |
+| **Strongest modules** | ✅ **M2** + **M7** complete; M1 (**9/10**), M3 (**7/8**), M5 (**5/7**) |
+| **In progress** | — |
+| **Biggest gaps** | ⬜ M3 global not-found, M4 metadata/caching, M9 forms, M5 `ci.yml` + `.env.example` |
+| **Score** | **38 / 57 (67%)** |
+| **Planned next feature** | ⬜ **S6** CI lint, **S7** forms (dev/Vercel), or **`app/not-found.tsx`** |
 
-**Repo layout (2026-11-13):** `(main)/posts` — `error.tsx`, **four `loading.tsx`**, **Suspense** on `[postsId]/page.tsx` + `comments/page.tsx`; root **`components/posts/`**, **`components/comments/`**; `docs/` + `archive/`; `lib/api/`.
+**Repo layout (2026-11-13):** Above + **`next.config.ts`** export gate, **`.github/workflows/deploy-pages.yml`**, `archive/` + `docs/` **`loading.tsx`**, `.gitignore` **`.preview/`**.
 
 **Next 3 actions (recommended):**
 
-1. **S7** — M9 comment form + Server Action on comments page (fits above `CommentsList` Suspense).
+1. **S6** — `ci.yml` (`npm run lint` + `build:gh-pages` on PR) + `.env.example`.
 2. **M3** — `app/not-found.tsx` for unknown top-level routes.
-3. **S6** — `.env.example` + CI `lint` / build.
+3. **S7** — M9 comment form (learn on `npm run dev`; not on static GHP without client-only submit).
 
 **Later (unchanged):** **S2** — `generateMetadata` on post page so tab title matches post (e.g. “qui est esse” on `/posts/2`).
 
