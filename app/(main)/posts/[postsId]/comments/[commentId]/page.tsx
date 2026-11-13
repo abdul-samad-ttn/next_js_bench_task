@@ -1,6 +1,19 @@
-import { getCommentById } from "@/lib/api/comments";
-import { getPostById } from "@/lib/api/posts";
 import { notFound, redirect } from "next/navigation";
+import { getPostById, getPosts } from "@/lib/api/posts";
+import { getCommentById, getComments } from "@/lib/api/comments";
+
+export async function generateStaticParams() {
+    const posts = await getPosts();
+    const params: { postsId: string; commentId: string }[] = [];
+  
+    for (const post of posts.slice(0, 5)) {
+      const comments = await getComments(post.id);
+      for (const c of comments) {
+        params.push({ postsId: String(post.id), commentId: String(c.id) });
+      }
+    }
+    return params;
+  }
 
 interface CommentDetailsPageProps {
     params: Promise<{commentId: string, postsId: string}>

@@ -1,6 +1,14 @@
 import { getPostById, getPosts } from "@/lib/api/posts";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateStaticParams() {
+  const posts = await getPosts();
+  return [
+    { slug: ["posts"] },
+    ...posts.map((p) => ({ slug: ["posts", String(p.id)] })),
+  ];
+}
 interface ArchivePageDynamicProps {
   params: Promise<{ slug?: string[] }>;
 }

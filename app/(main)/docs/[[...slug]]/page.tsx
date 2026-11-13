@@ -41,6 +41,12 @@ const DOC_LINKS = [
   },
 ];
 
+export async function generateStaticParams() {
+  return DOC_LINKS.map((doc) => ({
+    slug: doc.href.replace(/^\/docs\//, "").split("/"),
+  }));
+}
+
 const loadDocument = async (slug: string[]) => {
   try {
     const docPath = slug.slice(1).join("/");

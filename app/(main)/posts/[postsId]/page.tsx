@@ -1,11 +1,12 @@
-
-import { notFound } from "next/navigation";
-// import styles from "./Post.module.css";
-// import Link from "next/link";
-import { getPostById } from "@/lib/api/posts";
 import PostDetailContent from "@/components/posts/PostDetailContent";
 import { Suspense } from "react";
 import PostDetailSkeleton from "@/components/posts/PostDetailSkeleton";
+import { getPosts } from "@/lib/api/posts"; 
+
+export async function generateStaticParams() {
+  const posts = await getPosts();
+  return posts.map((p) => ({ postsId: String(p.id) }));
+}
 
 interface PostPageProps {
   params: Promise<{ postsId: string }>;
@@ -13,12 +14,6 @@ interface PostPageProps {
 
 const PostPage = async ({ params }: PostPageProps) => {
   const { postsId } = await params;
-
-
-  // const post = await getPostById(Number(postsId));
-  // if (!post) {
-  //   notFound();
-  // }
 
   return (
    <>

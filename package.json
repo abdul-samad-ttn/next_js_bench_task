@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:gh-pages": "GITHUB_ACTIONS=true next build",
     "start": "next start",
     "lint": "eslint"
   },
