@@ -5,7 +5,7 @@ interface Post {
   userId: number;
 }
 
-interface Comment {
+interface IComment {
   id: number;
   name: string;
   email: string;
@@ -13,4 +13,4 @@ interface Comment {
   postId: number;
 }
 
-export type { Post, Comment };
+export type { Post, IComment };

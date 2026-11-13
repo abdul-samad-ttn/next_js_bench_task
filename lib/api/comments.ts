@@ -1,13 +1,13 @@
 import { apiGet } from "./http";
-import { Comment } from "./types";
+import { IComment } from "./types";
 
-const getComments = async (postId: number): Promise<Comment[]> => {
-    const comments = await apiGet<Comment[]>(`/posts/${postId}/comments`);
+const getComments = async (postId: number): Promise<IComment[]> => {
+    const comments = await apiGet<IComment[]>(`/posts/${postId}/comments`);
     return comments;
 }
 
-const getCommentById = async (commentId: number): Promise<Comment> => {
-    const comment = await apiGet<Comment>(`/comments/${commentId}`);
+const getCommentById = async (commentId: number): Promise<IComment> => {
+    const comment = await apiGet<IComment>(`/comments/${commentId}`);
     return comment;
 }
 

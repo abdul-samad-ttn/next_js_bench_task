@@ -33,23 +33,23 @@ When you mark something **✅ Done**, add a short note: file path, URL you teste
 |--------|--------:|--------:|---:|---:|---:|
 | M1 — App Router basics | 10 | **9** | 0 | 0 | 1 |
 | M2 — Data & API layer | 7 | **7** | 0 | 0 | 0 |
-| M3 — UX boundaries (loading/error/404) | 8 | **6** | 0 | 2 | 0 |
+| M3 — UX boundaries (loading/error/404) | 8 | **7** | 0 | 1 | 0 |
 | M4 — Caching & metadata | 6 | **1** | 0 | 5 | 0 |
 | M5 — Static export & deploy | 7 | **0** | 0 | 7 | 0 |
 | M6 — Client vs server & APIs | 4 | **0** | 0 | 3 | 1 |
 | M7 — Layout & navigation patterns | 4 | **4** | 0 | 0 | 0 |
 | M8 — Housekeeping & quality | 5 | **4** | 0 | 1 | 0 |
 | M9 — Forms & add comment | 6 | **0** | 0 | 6 | 0 |
-| **Total** | **57** | **31** | **0** | **25** | **2** |
+| **Total** | **57** | **32** | **0** | **24** | **2** |
 
 | Metric | Value |
 |--------|------:|
-| **Points earned** | **31** / 57 |
-| **Overall %** | **54%** |
-| **Milestone** | 51–75% band — *S1 nearly done* (error + posts **`loading.tsx`** ✅); next: **Suspense** or **S7** |
+| **Points earned** | **32** / 57 |
+| **Overall %** | **56%** |
+| **Milestone** | 51–75% band — *S1* (error, `loading.tsx`, **Suspense** ✅); next: **global not-found** or **S7** forms |
 | **Modules 100% complete** | **M7** (4/4 ✅), **M2** (7/7 ✅) |
 
-*Last self-assessment date:* **2026-11-12** (posts tree **four** `loading.tsx` files; screenshots list → detail → comments → comment detail)
+*Last self-assessment date:* **2026-11-13** (Suspense on post detail + comments list; `components/posts/*`, `components/comments/*`; screenshots)
 
 ---
 
@@ -62,9 +62,9 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 | `/` | ✅ | Home heading; `NEXT_PUBLIC_API_KEY` shown (`app/(main)/page.tsx`); **no** posts breadcrumb |
 | `/about` | ✅ | Static copy; shared purple nav; **no** posts breadcrumb (`app/(main)/about/page.tsx`) |
 | `/posts` | ✅ | Breadcrumb **Home / Posts**; full list (~100) from API; `py-3` list items (screenshot 2026-11-12) |
-| `/posts/1` | ✅ | Same breadcrumb; CSS Module panel; link to comments (screenshot 2026-11-12) |
+| `/posts/1` | ✅ | Breadcrumb; shell **Post Details** + `PostDetailSkeleton` → CSS Module panel + comments link (`Suspense`, screenshot 2026-11-13) |
 | `/posts/2` | ✅ | Post title/body; CSS Module panel; link to comments |
-| `/posts/2/comments` | ✅ | Post title in heading; 5 comments; “View Comment” links |
+| `/posts/2/comments` | ✅ | Post title in `<h1>` (page); `CommentsListSkeleton` → list in `CommentsList` (`Suspense`, screenshot 2026-11-13) |
 | `/posts/2/comments/6` | ✅ | Post context + comment id, name, email, body |
 | `/posts/600` | ✅ | **Page Not Found** — `[postsId]/not-found.tsx` (screenshot 2026-11-12) |
 | `/posts/600/comments` | ✅ | Missing post → **`redirect(\`/posts/${postsId}\`)`** → `/posts/600` → **Page Not Found** (screenshot 2026-11-12) |
@@ -72,8 +72,8 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 | `/posts/600/comments/9999` | ✅ | Missing post → **redirect** to `/posts/600` → post **Page Not Found** (see `[commentId]/page.tsx`) |
 | `/posts/600/comments/1` | ✅ | Missing post → **redirect** → `/posts/600` **Page Not Found** (same as comments list) |
 | `/posts` (loading) | ✅ | **Loading Posts List…** + spinner; breadcrumb stays — `posts/loading.tsx` (screenshot 2026-11-12) |
-| `/posts/1` (loading) | ✅ | **Loading Posts Details…** — `[postsId]/loading.tsx` (screenshot 2026-11-12) |
-| `/posts/1/comments` (loading) | ✅ | **Loading Comments List…** — `comments/loading.tsx` (screenshot 2026-11-12) |
+| `/posts/1` (loading) | ✅ | Segment **`[postsId]/loading.tsx`** on nav; then inline **`PostDetailSkeleton`** under shell (screenshot 2026-11-13) |
+| `/posts/1/comments` (loading) | ✅ | Segment **`comments/loading.tsx`** until post title ready; then **`CommentsListSkeleton`** + list (screenshot 2026-11-13) |
 | `/posts/1/comments/1` (loading) | ✅ | **Loading Comments Details…** — `comments/[commentId]/loading.tsx` (screenshot 2026-11-12) |
 | `/posts` (API/list failure) | ✅ | `getPosts` throw → `posts/error.tsx` + **Try again** (reproduced earlier 2026-11-12) |
 | `/docs` | ✅ | Docs index — numbered links to five routing articles; empty `slug` on `[[...slug]]` (screenshot 2026-11-12) |
@@ -100,7 +100,7 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 
 **Error flow (S1):** List/API throw → `posts/error.tsx` (`reset`). Archive API throw → `archive/[...slug]/error.tsx` (file present; verify when testing archive + API down).
 
-**Loading flow (S1, 2026-11-12):** Nav + `posts/layout.tsx` breadcrumb render immediately; each segment shows its own `loading.tsx` while `await` fetch — list, post, comments list, comment detail (spinner UI; optional skeleton polish later).
+**Loading flow (S1):** Nav + `posts/layout.tsx` breadcrumb stay mounted. **Full segment** `loading.tsx`: `/posts`, `/posts/.../comments/[commentId]`. **Segment loader + Suspense (2026-11-13):** `/posts/[postsId]` (`PostDetailContent` in `components/posts/`), `/posts/[postsId]/comments` (`CommentsList` in `components/comments/`); inline pulse skeletons; list/detail routes unchanged for posts index + comment detail.
 
 | Planned (M9) | Status |
 |--------------|:------:|
@@ -144,7 +144,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 **M9 note:** Server Actions + forms need a **Node runtime** (`next dev` / hosted Next). Pure **static export (GitHub Pages)** cannot run Server Actions—you would fall back to client-only submit or a hosted API later.
 
-**You are here:** ✅ S0–S0d + S1 **partial** (error, redirect, **posts `loading.tsx` L1 complete**) → 🔶 **Suspense** (optional) + archive `error.tsx` verify → **S7** forms.
+**You are here:** ✅ S0–S0d + S1 **mostly done** (error, redirect, `loading.tsx`, **Suspense** ✅) → ⬜ global `app/not-found.tsx` + archive `error.tsx` verify → **S7** forms.
 
 ---
 
@@ -185,7 +185,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 ## M3 — Loading, errors, and not-found (8)
 
-**Subtotal:** **6** ✅ · 0 🔶 · 2 ⬜ → **6 / 8** points
+**Subtotal:** **7** ✅ · 0 🔶 · 1 ⬜ → **7 / 8** points
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
@@ -193,7 +193,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 1 | ✅ | `not-found.tsx` | Segment-specific 404 UI | Posts, comment segments; docs + archive; `/posts/600`, `/posts/1/comments/9999` (2026-11-12) |
 | 1 | ✅ | `not-found` vs React import | Framework convention, not a normal import | Learned; comment segment UIs avoid invalid `params` usage |
 | 1 | ✅ | `loading.tsx` | Instant fallback while segment loads | Four files under `app/(main)/posts/`: `loading.tsx`, `[postsId]/loading.tsx`, `comments/loading.tsx`, `comments/[commentId]/loading.tsx`; verified screenshots 2026-11-12 |
-| 1 | ⬜ | `<Suspense>` boundaries | Split slow data; works with `cacheComponents` | None |
+| 1 | ✅ | `<Suspense>` boundaries | Split slow data; works with `cacheComponents` | `[postsId]/page.tsx` + `comments/page.tsx`; `PostDetailContent`, `CommentsList`, skeletons under `components/`; verified `/posts/1`, `/posts/1/comments` (2026-11-13) |
 | 1 | ✅ | `error.tsx` | Recoverable runtime errors (Client Component) | `app/(main)/posts/error.tsx` — list failure, `reset`, nav + breadcrumb; 404 stays on `not-found.tsx` |
 | 1 | ✅ | Comment detail validation | 404 when comment missing or wrong `postId`; missing post → redirect | `/posts/1/comments/9999`; `/posts/600/comments/*` → redirect → post not-found |
 | 1 | ⬜ | Global `not-found` | `app/not-found.tsx` for unknown routes | Not added |
@@ -303,7 +303,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | S0b | Route group `(main)` + `posts/layout.tsx` breadcrumbs + padding cleanup | M1 | ✅ 2026-11-12 |
 | S0c | Docs `[[...slug]]` hub + five `routingDocs/*.md` articles (fs read, raw Markdown) | M1, M3 | ✅ 2026-11-12 |
 | S0d | Archive hub + `[...slug]` posts list/detail (API reuse, `slug` parsing) | M1, M3 | ✅ 2026-11-12 |
-| S1 | `loading.tsx`, `error.tsx` (404 + redirect ✅) | M3 | 🔶 **current** — `posts/error.tsx` + **posts tree `loading.tsx`** ✅; **Suspense** ⬜; archive `error.tsx` 🔶 verify |
+| S1 | `loading.tsx`, `error.tsx`, Suspense (404 + redirect ✅) | M3 | ✅ **2026-11-13** — posts tree `loading.tsx` + **`Suspense`** on post detail + comments list; ⬜ global `not-found`; archive `error.tsx` 🔶 verify |
 | S2 | `generateMetadata`, fetch caching, document prerender behavior | M4 | ⬜ |
 | S3 | `generateStaticParams`, `output: 'export'`, local `out/` test | M5 | ⬜ |
 | S4 | GitHub Actions + Pages (JSONPlaceholder or build-time fetch) | M5 | ⬜ |
@@ -349,6 +349,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 2026-11-12 | — | S1 error boundary | `posts/error.tsx`; `getPosts` throw; 404 matrix `/posts/600`, `/posts/1/comments/9999` | **+1** → **30** ✅ (M3 `error.tsx`) |
 | 2026-11-12 | — | Comments redirect polish | `comments/page.tsx` + `[commentId]/page.tsx`: `redirect` when `!post`; `/posts/600/comments` → Page Not Found; `archive/[...slug]/error.tsx` scaffolded | M3 evidence (no new pts) |
 | 2026-11-12 | — | S1 segment loading (L1) | Four `loading.tsx` in posts tree; spinner UI on `/posts`, `/posts/1`, `/posts/1/comments`, `/posts/1/comments/1` | **+1** → **31** ✅ (M3 `loading.tsx`) |
+| 2026-11-13 | — | S1 Suspense (L3) | `Suspense` + async components: `components/posts/PostDetailContent`, `PostDetailSkeleton`; `components/comments/CommentsList`, `CommentsListSkeleton`; segment `loading.tsx` kept on list + comment detail | **+1** → **32** ✅ (M3 `<Suspense>`) |
 | | | | | |
 
 ---
@@ -358,19 +359,19 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | Area | Status |
 |------|--------|
 | **Working demo** | ✅ Posts/comments flow + **docs hub** + **archive** (`/archive` → `/archive/posts` → post by id) |
-| **Strongest modules** | ✅ **M2** + **M7** complete; M1 (**9/10**), M3 (**6/8**) |
-| **In progress** | 🔶 S1: manual **Suspense** (optional); archive `error.tsx` verify |
-| **Biggest gaps** | ⬜ M3 Suspense + global not-found, M4 metadata, M5 deploy |
-| **Score** | **31 / 57 (54%)** |
-| **Planned next feature** | ⬜ **Suspense** lab or **S7** (M9 comment form) |
+| **Strongest modules** | ✅ **M2** + **M7** complete; M1 (**9/10**), M3 (**7/8**) |
+| **In progress** | 🔶 archive `error.tsx` verify; optional slim segment loaders on Suspense routes |
+| **Biggest gaps** | ⬜ M3 global not-found, M4 metadata, M5 deploy, M9 forms |
+| **Score** | **32 / 57 (56%)** |
+| **Planned next feature** | ⬜ **S7** (M9 comment form) or **`app/not-found.tsx`** |
 
-**Repo layout (2026-11-12):** `(main)/posts` — `error.tsx`, **four `loading.tsx`**, breadcrumb `layout.tsx`, comments **redirect**; `docs/` + `archive/`; `lib/api/`.
+**Repo layout (2026-11-13):** `(main)/posts` — `error.tsx`, **four `loading.tsx`**, **Suspense** on `[postsId]/page.tsx` + `comments/page.tsx`; root **`components/posts/`**, **`components/comments/`**; `docs/` + `archive/`; `lib/api/`.
 
 **Next 3 actions (recommended):**
 
-1. **S1 (optional)** — `Suspense` + async `PostsList` on `posts/page.tsx`; or **`archive/loading.tsx`**.
-2. **S6** — `.env.example` + CI `lint` / build.
-3. **S7** — M9 comment form + Server Action.
+1. **S7** — M9 comment form + Server Action on comments page (fits above `CommentsList` Suspense).
+2. **M3** — `app/not-found.tsx` for unknown top-level routes.
+3. **S6** — `.env.example` + CI `lint` / build.
 
 **Later (unchanged):** **S2** — `generateMetadata` on post page so tab title matches post (e.g. “qui est esse” on `/posts/2`).
 
