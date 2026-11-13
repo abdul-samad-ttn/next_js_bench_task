@@ -35,12 +35,12 @@ When you mark something **✅ Done**, add a short note: file path, URL you teste
 | M2 — Data & API layer | 7 | **7** | 0 | 0 | 0 |
 | M3 — UX boundaries (loading/error/404) | 8 | **7** | 0 | 1 | 0 |
 | M4 — Caching & metadata | 6 | **2** | 0 | 4 | 0 |
-| M5 — Static export & deploy | 7 | **5** | 0 | 2 | 0 |
-| M6 — Client vs server & APIs | 4 | **2** | 0 | 1 | 1 |
+| M5 — Static export & deploy | 7 | **5** | 0 | 0 | 2 |
+| M6 — Client vs server & APIs | 4 | **2** | 0 | 1 | 2 |
 | M7 — Layout & navigation patterns | 4 | **4** | 0 | 0 | 0 |
 | M8 — Housekeeping & quality | 5 | **4** | 0 | 1 | 0 |
 | M9 — Forms & add comment | 6 | **5** | 0 | 1 | 0 |
-| **Total** | **57** | **46** | **0** | **10** | **1** |
+| **Total** | **57** | **46** | **0** | **8** | **3** |
 
 | Metric | Value |
 |--------|------:|
@@ -49,7 +49,7 @@ When you mark something **✅ Done**, add a short note: file path, URL you teste
 | **Milestone** | 76–90% band — **Vercel production** live from **`main`**; **Option B** Suspense on dynamic routes; next: **global not-found**, **CI lint**, **GHP** without intercept routes |
 | **Modules 100% complete** | **M1** (10/10 ✅), **M7** (4/4 ✅), **M2** (7/7 ✅) |
 
-*Last self-assessment date:* **2026-11-13** — Vercel deploy verified; GHP **https://abdul-samad-ttn.github.io/next_js_bench_task/**
+*Last self-assessment date:* **2026-11-13** — Vercel [deploy](https://next-js-bench-task-89nzov8xv-abdul-samad-ttns-projects.vercel.app/) + alias [blush.vercel.app](https://next-js-bench-task-blush.vercel.app); GHP **https://abdul-samad-ttn.github.io/next_js_bench_task/**
 
 ---
 
@@ -63,7 +63,8 @@ Manual verification on `next dev` (`http://localhost:3000`) and **Vercel Product
 |------|:------:|----------|
 | `npm run build` + `npm run start` (local) | ✅ | Same flags as Vercel; **not** `npx serve build` (wrong folder) |
 | Deploy from Git branch **`main`** | ✅ | Manual **Create Deployment** → `main` @ `e3f6433` (merge PR #3 / `form-actions`); avoid redeploying old **`api_and_dynamic_routing`** commits |
-| Production URL | ✅ | **https://next-js-bench-task-blush.vercel.app** (alias); preview URLs under `*.vercel.app` |
+| Production URL | ✅ | **Primary alias:** [next-js-bench-task-blush.vercel.app](https://next-js-bench-task-blush.vercel.app) |
+| Deploy reference (2026-11-13) | ✅ | **This build:** [next-js-bench-task-89nzov8xv-abdul-samad-ttns-projects.vercel.app](https://next-js-bench-task-89nzov8xv-abdul-samad-ttns-projects.vercel.app/) (`main`, Option B smoke test) |
 | `/`, `/posts`, `/posts/2`, `/posts/3/comments` | ✅ | Nav, list, post detail, comments list — screenshots **2026-11-13** |
 | `/docs`, `/docs/routingDocs/nested-routing` | ✅ | Docs index + markdown article on Vercel |
 | Option B (params/fetch inside `<Suspense>`) | ✅ | `[postsId]/page.tsx`, comments tree, `[commentId]`, `posts/page.tsx`, `docs/[[...slug]]`, `archive/[...slug]` |
@@ -245,7 +246,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 ## M5 — Static export & deployment (7)
 
-**Subtotal:** **5** ✅ · **2** ⬜ → **5 / 7** points
+**Subtotal:** **5** ✅ · **0** ⬜ · **2** ⏸️ → **5 / 7** points
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
@@ -253,22 +254,22 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 1 | ✅ | Static export + dynamic routes | Must use `generateStaticParams` | All dynamic `page.tsx` under `(main)`; comment detail prebuilds **first 5 posts** only |
 | 1 | ✅ | Build-time vs client fetch | What works on GitHub Pages | JSONPlaceholder via `API_BASE_URL` in Actions; no Node at runtime; loaders/skeletons dev-oriented |
 | 1 | ✅ | `basePath` / `assetPrefix` | Project site on `github.io/<repo>/` | `/next_js_bench_task`; live site CSS/JS OK on GHP |
-| 1 | ⬜ | GitHub Actions: CI | `lint`, `build` on PR | Only `deploy-pages.yml` today — no `ci.yml` |
-| 1 | ✅ | GitHub Actions: deploy Pages | Publish `out/` | `.github/workflows/deploy-pages.yml`; push `main`; Pages source = GitHub Actions |
-| 1 | ⬜ | `.env.example` | Document vars without secrets | `API_BASE_URL`, `GITHUB_ACTIONS` / local export notes |
+| 1 | ⏸️ | GitHub Actions: CI | `lint`, `build` on PR | **Out of scope for demo** — `deploy-pages.yml` on push `main` is enough; add `ci.yml` only if you want PR gates |
+| 1 | ✅ | GitHub Actions: deploy Pages | Publish `out/` | **Working** — `.github/workflows/deploy-pages.yml` (Node 22, `npm run build:gh-pages`, `API_BASE_URL` in job); push **`main`** + Pages source = GitHub Actions; live **https://abdul-samad-ttn.github.io/next_js_bench_task/** verified **2026-11-13** |
+| 1 | ⏸️ | `.env.example` | Document vars without secrets | **Ignored for demo** — use local `.env` + README / this tracker (`API_BASE_URL`, `NEXT_PUBLIC_*`, `GITHUB_ACTIONS` for export) |
 
 ---
 
 ## M6 — Client Components & Route Handlers (4)
 
-**Subtotal:** **2** ✅ · 1 ⬜ · 1 ⏸️ → **2 / 4** points *(forms: **M9**; Route Handlers ⏸️)*
+**Subtotal:** **2** ✅ · 1 ⬜ · **2** ⏸️ → **2 / 4** points *(forms: **M9**; Route Handlers ⏸️ not needed)*
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
 | 1 | ✅ | `"use client"` | When UI needs state/effects | `CommentsForm`, `CommentFormSubmitButton`, `CommentsFormModalHost`, `ModalCloseButton`, `createCommentFormAction.ts` |
 | 1 | ⬜ | `useParams()` (client) | URL params in client trees | Modal uses server-passed `postsId`; no `useParams` yet |
 | 1 | ✅ | Client fetch + loading state | Client-side fetch when static export has no server runtime | `lib/api/http.ts` `apiPost`; `createComment` from client action — JSONPlaceholder POST **201**; `NEXT_PUBLIC_API_BASE_URL` in `config.ts` |
-| 1 | ⏸️ | Route Handlers `app/api/.../route.ts` | BFF on Node host | Optional alt. to Server Actions; N/A for pure GHP |
+| 1 | ⏸️ | Route Handlers `app/api/.../route.ts` | HTTP API routes on **your** Next server (`GET`/`POST` handlers) | **Not needed for this demo** — data goes **browser/server components → `lib/api` → JSONPlaceholder**; Route Handlers are for hiding keys, shaping responses, or webhooks. Optional later on Vercel only; **no `app/api/` folder by design** |
 
 ---
 
@@ -335,8 +336,8 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | S2 | `generateMetadata`, fetch caching, document prerender behavior | M4 | ⬜ |
 | S3 | `generateStaticParams`, `output: 'export'`, local `out/` test | M5 | ✅ **2026-11-13** — 338 static pages; `.preview/` local serve |
 | S4 | GitHub Actions + Pages (JSONPlaceholder build-time fetch) | M5 | ✅ **2026-11-13** — **https://abdul-samad-ttn.github.io/next_js_bench_task/** |
-| S5 | Client component exercise; optional Route Handlers locally | M6 | ⬜ |
-| S6 | `.env.example` + CI lint/typecheck | M8, M5 | ⬜ *(console.log ✅)* |
+| S5 | Client component exercise; optional Route Handlers locally | M6 | ⏸️ *(not needed — see M6)* |
+| S6 | `.env.example` + CI lint/typecheck | M8, M5 | ⏸️ *(demo: GHA deploy ✅; `.env.example` skipped)* |
 | S7 | Add comment form: client actions, modal intercept, validation, POST | M9 | ✅ **2026-11-13** — client path + modal on dev/Vercel; Server Action + `revalidatePath` ⬜ |
 | S7b | Vercel hosted Next (`main`, Option B, production smoke) | M4, M5 | ✅ **2026-11-13** — **Create Deployment** on `main`; posts/docs/comments on **vercel.app** |
 
@@ -354,6 +355,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | `error.tsx` | Catches errors in segment; must be client component |
 | `generateStaticParams` | Tells build which dynamic URLs to pre-render |
 | Static export | No Node at runtime; good for GitHub Pages |
+| Route Handler | `app/api/.../route.ts` — your server exposes HTTP endpoints; demo uses `lib/api` → external API instead |
 | Server Action | `"use server"` async fn; called from forms or client |
 | `revalidatePath` | Bust cache after mutation so lists refresh |
 | `useFormStatus` | Pending state for form submit (React / Next forms) |
@@ -395,11 +397,11 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | Area | Status |
 |------|--------|
 | **Working demo** | ✅ **Dev** + ✅ **Vercel** — posts/comments/docs/archive; add comment (list + intercept modal + `/comments/new`) |
-| **Production Vercel** | ✅ **`main`** deploy **2026-11-13** — **https://next-js-bench-task-blush.vercel.app**; use **Create Deployment** on `main`, not old `api_and_dynamic_routing` redeploys |
+| **Production Vercel** | ✅ **`main`** deploy **2026-11-13** — alias [next-js-bench-task-blush.vercel.app](https://next-js-bench-task-blush.vercel.app); verified deploy [next-js-bench-task-89nzov8xv-abdul-samad-ttns-projects.vercel.app](https://next-js-bench-task-89nzov8xv-abdul-samad-ttns-projects.vercel.app/) |
 | **Production GHP** | ✅ posts/comments/docs/archive; 🔶 `build:gh-pages` — **remove or gate** `@modal/(.)…` intercept for export; modal = Vercel-only unless client-only workaround |
 | **Strongest modules** | ✅ **M1**, **M2**, **M7** complete; M9 (**5/6**), M3 (**7/8**), M5 (**5/7**) |
 | **In progress** | 🔶 GHP export vs Vercel feature split; optional Vercel env audit |
-| **Biggest gaps** | ⬜ M9 Server Action, M3 global not-found, M4 metadata/caching, M5 `ci.yml` + `.env.example` |
+| **Biggest gaps** | ⬜ M9 Server Action, M3 global not-found, M4 metadata/caching; M8 optional lint CI |
 | **Score** | **46 / 57 (81%)** |
 | **Planned next feature** | **S6** CI lint · **`app/not-found.tsx`** · GHP build policy for intercept routes |
 
@@ -407,9 +409,9 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 **Next 3 actions (recommended):**
 
-1. **S6** — `ci.yml` (`npm run lint` + `npm run build` on PR for Vercel parity; optional `build:gh-pages` job) + `.env.example`.
-2. **M3** — `app/not-found.tsx` for unknown top-level routes.
-3. **M5 GHP** — document or script: Vercel = full app; GHP = static export **without** intercept routes; re-run `build:gh-pages` after any route change.
+1. **M3** — `app/not-found.tsx` for unknown top-level routes.
+2. **M5 GHP** — re-run `build:gh-pages` after route changes; intercept modal = Vercel-only unless export excludes `@modal`.
+3. **M4** — `generateMetadata` or fetch cache tags (optional learning).
 
 **Later (unchanged):** **S2** — `generateMetadata` on post page so tab title matches post (e.g. “qui est esse” on `/posts/2`).
 
