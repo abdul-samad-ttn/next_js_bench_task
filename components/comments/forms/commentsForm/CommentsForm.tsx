@@ -44,8 +44,6 @@ const CommentsForm = ({postsId, onSuccess}: CommentsFormProps) => {
             </form>
 
             {state.error ? <p className="text-sm text-red-500">{state.error}</p> : null}
-            {state.ok && state.message ? <p className="text-sm text-green-500">{state.message}</p> : null}
-
         </div>
     )
 }
