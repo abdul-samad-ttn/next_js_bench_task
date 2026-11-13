@@ -31,25 +31,25 @@ When you mark something **✅ Done**, add a short note: file path, URL you teste
 
 | Module | Max pts | ✅ Done | 🔶 | ⬜ | ⏸️ |
 |--------|--------:|--------:|---:|---:|---:|
-| M1 — App Router basics | 10 | **9** | 0 | 0 | 1 |
+| M1 — App Router basics | 10 | **10** | 0 | 0 | 0 |
 | M2 — Data & API layer | 7 | **7** | 0 | 0 | 0 |
 | M3 — UX boundaries (loading/error/404) | 8 | **7** | 0 | 1 | 0 |
 | M4 — Caching & metadata | 6 | **2** | 0 | 4 | 0 |
 | M5 — Static export & deploy | 7 | **5** | 0 | 2 | 0 |
-| M6 — Client vs server & APIs | 4 | **0** | 0 | 3 | 1 |
+| M6 — Client vs server & APIs | 4 | **2** | 0 | 1 | 1 |
 | M7 — Layout & navigation patterns | 4 | **4** | 0 | 0 | 0 |
 | M8 — Housekeeping & quality | 5 | **4** | 0 | 1 | 0 |
-| M9 — Forms & add comment | 6 | **0** | 0 | 6 | 0 |
-| **Total** | **57** | **38** | **0** | **18** | **2** |
+| M9 — Forms & add comment | 6 | **5** | 0 | 1 | 0 |
+| **Total** | **57** | **46** | **0** | **10** | **1** |
 
 | Metric | Value |
 |--------|------:|
-| **Points earned** | **38** / 57 |
-| **Overall %** | **67%** |
-| **Milestone** | 51–75% band — **S3 + S4** GitHub Pages live; next: **M9** forms, **global not-found**, or **CI lint** |
-| **Modules 100% complete** | **M7** (4/4 ✅), **M2** (7/7 ✅) |
+| **Points earned** | **46** / 57 |
+| **Overall %** | **81%** |
+| **Milestone** | 76–90% band — **M9** forms + **parallel/intercept modal** on `next dev`; next: **Server Action** (optional), **global not-found**, **CI lint**, GHP verify add-comment flow |
+| **Modules 100% complete** | **M1** (10/10 ✅), **M7** (4/4 ✅), **M2** (7/7 ✅) |
 
-*Last self-assessment date:* **2026-11-13** (static export + `deploy-pages.yml`; live **https://abdul-samad-ttn.github.io/next_js_bench_task/**)
+*Last self-assessment date:* **2026-11-13** (comment form + intercept modal; static export + **https://abdul-samad-ttn.github.io/next_js_bench_task/**)
 
 ---
 
@@ -63,8 +63,10 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 | `/about` | ✅ | Static copy; shared purple nav; **no** posts breadcrumb (`app/(main)/about/page.tsx`) |
 | `/posts` | ✅ | Breadcrumb **Home / Posts**; full list (~100) from API; `py-3` list items (screenshot 2026-11-12) |
 | `/posts/1` | ✅ | Breadcrumb; shell **Post Details** + `PostDetailSkeleton` → CSS Module panel + comments link (`Suspense`, screenshot 2026-11-13) |
-| `/posts/2` | ✅ | Post title/body; CSS Module panel; link to comments |
-| `/posts/2/comments` | ✅ | Post title in `<h1>` (page); `CommentsListSkeleton` → list in `CommentsList` (`Suspense`, screenshot 2026-11-13) |
+| `/posts/2` | ✅ | Post title/body; CSS Module panel; **Add comment** + comments links (`PostDetailContent`, screenshot 2026-11-13) |
+| `/posts/2/comments` | ✅ | Post title in `<h1>` (page); `CommentsListSkeleton` → list; inline **`CommentsForm`** at bottom (`Suspense`, screenshot 2026-11-13) |
+| `/posts/5` → **Add comment** (soft nav) | ✅ | Intercept modal `@modal/(.)comments/new`; URL `…/comments/new`; post detail behind overlay; success toast; `router.back()` closes modal (screenshot 2026-11-13) |
+| `/posts/5/comments/new` (hard nav) | ✅ | Full-page `comments/new/page.tsx` + `CommentsForm` (new tab / refresh — no overlay) |
 | `/posts/2/comments/6` | ✅ | Post context + comment id, name, email, body |
 | `/posts/600` | ✅ | **Page Not Found** — `[postsId]/not-found.tsx` (screenshot 2026-11-12) |
 | `/posts/600/comments` | ✅ | Missing post → **`redirect(\`/posts/${postsId}\`)`** → `/posts/600` → **Page Not Found** (screenshot 2026-11-12) |
@@ -104,7 +106,9 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 
 | Planned (M9) | Status |
 |--------------|:------:|
-| Submit new comment on `/posts/[postsId]/comments` (Server Action + form) | ⬜ |
+| Submit new comment (client `useActionState` + `lib/api/createComment`) | ✅ |
+| Intercept modal add-comment from post detail | ✅ |
+| Server Action + `revalidatePath` (Node deploy path) | ⬜ |
 
 ### Dev console / overlay notes (observed, not blockers)
 
@@ -150,13 +154,13 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 **M9 note:** Server Actions + forms need a **Node runtime** (`next dev` / hosted Next). Pure **static export (GitHub Pages)** cannot run Server Actions—you would fall back to client-only submit or a hosted API later.
 
-**You are here:** ✅ **S3 + S4** (static export + GitHub Pages deploy) → ⬜ optional **S6** (`ci.yml` lint), **M3** global `not-found`, **S7** forms (Server Actions ≠ GHP).
+**You are here:** ✅ **S7 (partial)** — client form + parallel/intercept modal on `next dev` → ⬜ **S6** CI lint, **M3** global `not-found`, optional **Server Action** row in M9; re-run **`build:gh-pages`** after `comments/new` + `@modal` routes.
 
 ---
 
 ## M1 — App Router & routing (10)
 
-**Subtotal:** **9** ✅ · 0 🔶 · 0 ⬜ · 1 ⏸️ → **9 / 10** points
+**Subtotal:** **10** ✅ · 0 🔶 · 0 ⬜ · 0 ⏸️ → **10 / 10** points — **module complete**
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
@@ -169,7 +173,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 1 | ✅ | Static `metadata` | Root title/description | `export const metadata` in `app/layout.tsx` |
 | 1 | ✅ | Segment `layout.tsx` | Layout only for `/posts` tree (breadcrumbs) | `app/(main)/posts/layout.tsx` — **Home / Posts** on `/posts` and `/posts/1` (verified 2026-11-12) |
 | 1 | ✅ | Route groups `(group)` | Organize folders without affecting URL | `app/(main)/` — URLs unchanged; `(main)/layout.tsx` has nav + `container mx-auto py-4` |
-| 1 | ⏸️ | Parallel / intercepting routes | Modals, photo feeds pattern | **Read** in `routingDocs/*.md`; runtime slots/intercept not implemented — Lab B on comment modal |
+| 1 | ✅ | Parallel / intercepting routes | Modals, photo feeds pattern | `[postsId]/layout.tsx` + `@modal/default.tsx` + `@modal/(.)comments/new`; full page `comments/new/page.tsx`; soft vs hard nav verified **2026-11-13** |
 
 ---
 
@@ -239,38 +243,38 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 ## M6 — Client Components & Route Handlers (4)
 
-**Subtotal:** **0** ✅ · 3 ⬜ · 1 ⏸️ → **0 / 4** points *(⏸️ optional; forms live in **M9**)*
+**Subtotal:** **2** ✅ · 1 ⬜ · 1 ⏸️ → **2 / 4** points *(forms: **M9**; Route Handlers ⏸️)*
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
-| 1 | ⬜ | `"use client"` | When UI needs state/effects | All pages are Server Components |
-| 1 | ⬜ | `useParams()` (client) | URL params in client trees | |
-| 1 | ⬜ | Client fetch + loading state | Client-side fetch when static export has no server runtime | For GHP after S3 |
+| 1 | ✅ | `"use client"` | When UI needs state/effects | `CommentsForm`, `CommentFormSubmitButton`, `CommentsFormModalHost`, `ModalCloseButton`, `createCommentFormAction.ts` |
+| 1 | ⬜ | `useParams()` (client) | URL params in client trees | Modal uses server-passed `postsId`; no `useParams` yet |
+| 1 | ✅ | Client fetch + loading state | Client-side fetch when static export has no server runtime | `lib/api/http.ts` `apiPost`; `createComment` from client action — JSONPlaceholder POST **201**; `NEXT_PUBLIC_API_BASE_URL` in `config.ts` |
 | 1 | ⏸️ | Route Handlers `app/api/.../route.ts` | BFF on Node host | Optional alt. to Server Actions; N/A for pure GHP |
 
 ---
 
 ## M9 — Forms, Server Actions & add comment (6)
 
-**Goal:** On `/posts/[postsId]/comments`, let users **submit a new comment** and learn App Router **forms + Server Actions** (JSONPlaceholder `POST /comments` returns fake success—data is not really stored).
+**Goal:** Submit a new comment via App Router **forms** + React 19 **`useActionState`** (client path works on **GitHub Pages**). Optional follow-up: **`"use server"`** on Node host.
 
-**Subtotal:** **0** ✅ · 6 ⬜ → **0 / 6** points
+**Subtotal:** **5** ✅ · 0 🔶 · **1** ⬜ → **5 / 6** points
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
-| 1 | ⬜ | Form UI on comments page | Fields: name, email, body; Tailwind + a11y labels | e.g. `CommentForm` Client Component on `comments/page.tsx` |
-| 1 | ⬜ | Server Action (`"use server"`) | Async function runs on server; receives `FormData` | `app/(main)/posts/[postsId]/comments/actions.ts` or colocated action file |
-| 1 | ⬜ | `<form action={...}>` | Progressive enhancement; no client `fetch` required | Native submit → Server Action |
-| 1 | ⬜ | Pending / feedback UI | `useFormStatus` or `useActionState` while submitting | Disable button, “Submitting…”, success/error message |
-| 1 | ⬜ | Validation | Required fields, email shape; return errors from action | Show inline errors without full page crash |
-| 1 | ⬜ | POST + refresh list | `fetch` POST to JSONPlaceholder; `revalidatePath` for comments route | New comment appears after refresh/revalidate (demo only) |
+| 1 | ✅ | Form UI on comments page | Fields: name, email, body; Tailwind + a11y labels | `components/comments/forms/commentsForm/CommentsForm.tsx`; on `comments/page.tsx` + modal |
+| 1 | ⬜ | Server Action (`"use server"`) | Async function runs on server; receives `FormData` | **Deferred** — using client `submitCommentAction` + `createCommentFormAction` for GHP |
+| 1 | ✅ | `<form action={...}>` | Progressive enhancement; form actions | `<form action={boundFormAction}>` + hidden `postsId` |
+| 1 | ✅ | Pending / feedback UI | `useFormStatus` or `useActionState` while submitting | `CommentFormSubmitButton` + `useActionState`; `react-hot-toast` + `<Toaster>` in `(main)/layout.tsx` |
+| 1 | ✅ | Validation | Required fields; return errors from action | `submitCommentAction` empty-field check; HTML `required` on inputs |
+| 1 | ✅ | POST + service layer | `fetch` POST to JSONPlaceholder via `lib/api` | `apiPost` in `http.ts`; `createComment(postId, input)` in `comments.ts`; demo id **501** — list not persisted / no `revalidatePath` yet |
 
-**Suggested build order (when you start M9):**
+**Implemented stack (2026-11-13):**
 
-1. `createComment(formData)` Server Action + `lib/api/comments.ts` → `createComment(postId, payload)` with POST.
-2. Client form component with `action={createComment.bind(null, postsId)}` or hidden `postId` input.
-3. `revalidatePath(\`/posts/${postsId}/comments\`)` after success.
-4. Document: JSONPlaceholder does not persist—success is for learning submit flow only.
+1. `submitCommentAction` → `createComment` (`lib/api/comments.ts`).
+2. `createCommentFormAction(onSuccess?)` — toast + optional modal close (`router.back()` in `CommentsFormModalHost`).
+3. Intercept modal: `PostDetailContent` **Add comment** → `@modal/(.)comments/new`; X via `ModalCloseButton`.
+4. JSONPlaceholder does not persist — success toast + modal close is the intended UX.
 
 ---
 
@@ -315,7 +319,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | S4 | GitHub Actions + Pages (JSONPlaceholder build-time fetch) | M5 | ✅ **2026-11-13** — **https://abdul-samad-ttn.github.io/next_js_bench_task/** |
 | S5 | Client component exercise; optional Route Handlers locally | M6 | ⬜ |
 | S6 | `.env.example` + CI lint/typecheck | M8, M5 | ⬜ *(console.log ✅)* |
-| S7 | Add comment form: Server Action, validation, `revalidatePath` | M9 | ⬜ |
+| S7 | Add comment form: client actions, modal intercept, validation, POST | M9 | 🔶 **2026-11-13** — client path ✅; Server Action + `revalidatePath` ⬜ |
 
 ---
 
@@ -334,6 +338,9 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | Server Action | `"use server"` async fn; called from forms or client |
 | `revalidatePath` | Bust cache after mutation so lists refresh |
 | `useFormStatus` | Pending state for form submit (React / Next forms) |
+| `useActionState` | Form state + `isPending`; pairs with `action={formAction}` (React 19) |
+| Parallel `@modal` slot | Second UI tree in same layout; paired with intercept `(.)` routes |
+| Intercepting route `(.)segment` | Soft nav → modal slot; hard nav → full `page.tsx` |
 | Route group `(name)` | Folder for organization; **not** in the URL |
 | `[[...slug]]` | Optional catch-all — zero or more URL segments (e.g. `/docs` vs `/docs/a/b`) |
 | `[...slug]` | Required catch-all — **one or more** segments (e.g. `/archive/posts`; hub at `archive/page.tsx` for `/archive`) |
@@ -358,6 +365,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 2026-11-13 | — | S1 Suspense (L3) | `Suspense` + async components: `components/posts/PostDetailContent`, `PostDetailSkeleton`; `components/comments/CommentsList`, `CommentsListSkeleton`; segment `loading.tsx` kept on list + comment detail | **+1** → **32** ✅ (M3 `<Suspense>`) |
 | 2026-11-13 | — | S3 static export | `generateStaticParams` (posts, comments, docs, archive); export config; `cacheComponents` off on GHP build; local `build:gh-pages` | **+4** → **36** ✅ (M5 rows: export, params, build-time fetch, basePath) |
 | 2026-11-13 | — | S4 GitHub Pages | `deploy-pages.yml`; merge `main`; Pages → GitHub Actions; production smoke test posts + comments | **+2** → **38** ✅ (+1 M5 deploy, +1 M4 `generateStaticParams`) |
+| 2026-11-13 | ~3h | S7 forms + intercept modal | `CommentsForm` + `useActionState`/`useFormStatus`; `createComment`/`apiPost`; parallel `@modal` + `(.)comments/new`; toast; modal close on success | **+8** → **46** ✅ (+1 M1 intercept, +2 M6 client, +5 M9 form rows) |
 | | | | | |
 
 ---
@@ -366,20 +374,21 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 | Area | Status |
 |------|--------|
-| **Working demo** | ✅ **Dev** (`npm run dev`) + **prod** GHP — posts/comments, docs, archive |
-| **Strongest modules** | ✅ **M2** + **M7** complete; M1 (**9/10**), M3 (**7/8**), M5 (**5/7**) |
-| **In progress** | — |
-| **Biggest gaps** | ⬜ M3 global not-found, M4 metadata/caching, M9 forms, M5 `ci.yml` + `.env.example` |
-| **Score** | **38 / 57 (67%)** |
-| **Planned next feature** | ⬜ **S6** CI lint, **S7** forms (dev/Vercel), or **`app/not-found.tsx`** |
+| **Working demo** | ✅ **Dev** — full posts/comments flow + **add comment** (list + intercept modal + full `/comments/new`) |
+| **Production GHP** | ✅ posts/comments/docs/archive; 🔶 re-verify **`build:gh-pages`** includes `comments/new` + modal routes after latest form work |
+| **Strongest modules** | ✅ **M1**, **M2**, **M7** complete; M9 (**5/6**), M3 (**7/8**), M5 (**5/7**) |
+| **In progress** | 🔶 S7 — Server Action row optional; GHP smoke for client POST |
+| **Biggest gaps** | ⬜ M9 Server Action, M3 global not-found, M4 metadata/caching, M5 `ci.yml` + `.env.example` |
+| **Score** | **46 / 57 (81%)** |
+| **Planned next feature** | **S6** CI lint · **`app/not-found.tsx`** · optional Server Action on `npm run dev` only |
 
-**Repo layout (2026-11-13):** Above + **`next.config.ts`** export gate, **`.github/workflows/deploy-pages.yml`**, `archive/` + `docs/` **`loading.tsx`**, `.gitignore` **`.preview/`**.
+**Repo layout (2026-11-13):** Above + `components/comments/forms/commentsForm/*`, `components/modalCloseButton/`, `[postsId]/layout.tsx` + `@modal/`, `react-hot-toast`.
 
 **Next 3 actions (recommended):**
 
-1. **S6** — `ci.yml` (`npm run lint` + `build:gh-pages` on PR) + `.env.example`.
+1. **S6** — `ci.yml` (`npm run lint` + `build:gh-pages` on PR) + `.env.example` (`API_BASE_URL`, `NEXT_PUBLIC_API_BASE_URL`).
 2. **M3** — `app/not-found.tsx` for unknown top-level routes.
-3. **S7** — M9 comment form (learn on `npm run dev`; not on static GHP without client-only submit).
+3. **`build:gh-pages` + GHP** — confirm add-comment full page + client POST from production URL (modal intercept is dev soft-nav only).
 
 **Later (unchanged):** **S2** — `generateMetadata` on post page so tab title matches post (e.g. “qui est esse” on `/posts/2`).
 

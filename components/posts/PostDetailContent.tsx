@@ -4,24 +4,29 @@ import { getPostById } from "@/lib/api/posts";
 import styles from "@/app/(main)/posts/[postsId]/Post.module.css";
 
 interface PostDetailContentProps {
-  postsId: string;
+    postsId: string;
 }
 
 const PostDetailContent = async ({ postsId }: PostDetailContentProps) => {
-  const post = await getPostById(Number(postsId));
-  if (!post) {
-    notFound();
-  }
+    const post = await getPostById(Number(postsId));
+    if (!post) {
+        notFound();
+    }
 
-  return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Post: {post?.title}</h1>
-      <p className={styles.content}>Description: {post?.body}</p>
-      <Link href={`/posts/${postsId}/comments`} className="text-blue-500 mt-4">
-        Check the comments for this post
-      </Link>
-    </div>
-  );
+    return (
+        <div className={styles.container}>
+            <h1 className={styles.title}>Post: {post?.title}</h1>
+            <p className={styles.content}>Description: {post?.body}</p>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-4">
+                <Link href={`/posts/${postsId}/comments/new`} className="text-blue-500">
+                    Add comment
+                </Link>
+                <Link href={`/posts/${postsId}/comments`} className="text-blue-500">
+                    Check the comments for this post
+                </Link>
+            </div>
+        </div>
+    );
 };
 
 export default PostDetailContent;
