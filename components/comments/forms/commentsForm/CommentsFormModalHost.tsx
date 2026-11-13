@@ -12,17 +12,17 @@ interface CommentsFormModalHostProps {
 const CommentsFormModalHost = ({ postsId }: CommentsFormModalHostProps) => {
 
     const pathname = usePathname();
-    const [formKey, setFormKey] = useState(0);
+    const [formKey, setFormKey] = useState("");
     const router = useRouter();
 
     useEffect(()=>{
         if(pathname.endsWith("/comments/new")) {
-            setFormKey(Number(crypto.randomUUID()));
+            setFormKey(crypto.randomUUID());
         }
     },[pathname]);
 
     const handleSuccess = () => {
-        setFormKey(Number(crypto.randomUUID()));
+        setFormKey(crypto.randomUUID());
         router.back();
     }
 
