@@ -46,16 +46,33 @@ When you mark something **✅ Done**, add a short note: file path, URL you teste
 |--------|------:|
 | **Points earned** | **46** / 57 |
 | **Overall %** | **81%** |
-| **Milestone** | 76–90% band — **M9** forms + **parallel/intercept modal** on `next dev`; next: **Server Action** (optional), **global not-found**, **CI lint**, GHP verify add-comment flow |
+| **Milestone** | 76–90% band — **Vercel production** live from **`main`**; **Option B** Suspense on dynamic routes; next: **global not-found**, **CI lint**, **GHP** without intercept routes |
 | **Modules 100% complete** | **M1** (10/10 ✅), **M7** (4/4 ✅), **M2** (7/7 ✅) |
 
-*Last self-assessment date:* **2026-11-13** (comment form + intercept modal; static export + **https://abdul-samad-ttn.github.io/next_js_bench_task/**)
+*Last self-assessment date:* **2026-11-13** — Vercel deploy verified; GHP **https://abdul-samad-ttn.github.io/next_js_bench_task/**
 
 ---
 
 ## Demo application — verified flows
 
-Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-11-12** (route group, docs hub, **archive**) + **2025-11-11** (comments flow).
+Manual verification on `next dev` (`http://localhost:3000`) and **Vercel Production** (**2026-11-13** screenshots). Earlier: **2026-11-12** (route group, docs hub, **archive**) + **2025-11-11** (comments flow).
+
+### Production — Vercel (Node, `cacheComponents: true`)
+
+| Item | Status | Evidence |
+|------|:------:|----------|
+| `npm run build` + `npm run start` (local) | ✅ | Same flags as Vercel; **not** `npx serve build` (wrong folder) |
+| Deploy from Git branch **`main`** | ✅ | Manual **Create Deployment** → `main` @ `e3f6433` (merge PR #3 / `form-actions`); avoid redeploying old **`api_and_dynamic_routing`** commits |
+| Production URL | ✅ | **https://next-js-bench-task-blush.vercel.app** (alias); preview URLs under `*.vercel.app` |
+| `/`, `/posts`, `/posts/2`, `/posts/3/comments` | ✅ | Nav, list, post detail, comments list — screenshots **2026-11-13** |
+| `/docs`, `/docs/routingDocs/nested-routing` | ✅ | Docs index + markdown article on Vercel |
+| Option B (params/fetch inside `<Suspense>`) | ✅ | `[postsId]/page.tsx`, comments tree, `[commentId]`, `posts/page.tsx`, `docs/[[...slug]]`, `archive/[...slug]` |
+| Intercept modal add comment | 🔶 | Works on **`next dev`** / Vercel soft nav — verify on live URL when testing modal |
+| Env on Vercel | 🔶 | Set `API_BASE_URL` + `NEXT_PUBLIC_API_BASE_URL` → `https://jsonplaceholder.typicode.com` if not already |
+
+**Vercel settings checked:** **Settings → Environments → Production → Branch Tracking = `main`**.
+
+### Production — GitHub Pages (static export)
 
 | Route | Status | What works |
 |-------|:------:|------------|
@@ -133,7 +150,8 @@ Manual verification on `next dev` (`http://localhost:3000`). Screenshots **2026-
 | Network timeout on fetch | ✅ `fetch` throws → boundary | ✅ when API down (earlier repro) |
 | API 5xx → `error.tsx` | ✅ non-404 throw in `http.ts` | 🔶 optional explicit test |
 | Unknown top-level route → `app/not-found.tsx` | ⬜ | ⬜ |
-| `next build` / static export | ✅ | `npm run build:gh-pages` → `out/` (338 routes); CI + local |
+| `next build` (Vercel / Node) | ✅ | `npm run build` on `main`; prerender passes after Option B — **2026-11-13** |
+| `next build` / static export (GHP) | ✅ | `npm run build:gh-pages` → `out/` (338 routes); **intercept `@modal`** not supported on export — use Vercel for modal or exclude route on GHP build |
 | GitHub Pages (production) | ✅ | Actions deploy; home, posts, comments verified **2026-11-13** |
 | Loaders / Suspense on GHP | ⏸️ | Pre-rendered HTML — no runtime skeleton on static host (expected) |
 
@@ -154,7 +172,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 **M9 note:** Server Actions + forms need a **Node runtime** (`next dev` / hosted Next). Pure **static export (GitHub Pages)** cannot run Server Actions—you would fall back to client-only submit or a hosted API later.
 
-**You are here:** ✅ **S7 (partial)** — client form + parallel/intercept modal on `next dev` → ⬜ **S6** CI lint, **M3** global `not-found`, optional **Server Action** row in M9; re-run **`build:gh-pages`** after `comments/new` + `@modal` routes.
+**You are here:** ✅ **S7** client form + intercept modal; ✅ **Vercel production** from **`main`** → ⬜ **S6** CI lint, **M3** global `not-found`, optional **M9** Server Action; **GHP** rebuild without intercept route (or accept modal on Vercel only).
 
 ---
 
@@ -167,7 +185,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 1 | ✅ | File-based routes | `app/(main)/page.tsx`, `app/(main)/about/page.tsx` | Verified `/`, `/about` (screenshots 2026-11-12) |
 | 1 | ✅ | Dynamic segment | `[postsId]`, `[[...slug]]`, `[...slug]` | Nested `/posts/[postsId]`; optional **`/docs`** + `routingDocs/*`; required **`/archive/posts`**, `/archive/posts/1` — `archive/[...slug]/page.tsx` branches on `slug.length` |
 | 1 | ✅ | Nested dynamic routes | Post → comments → comment detail | Verified `/posts/2/comments`, `/posts/2/comments/6` |
-| 1 | ✅ | Async `params` (Promise) | `await params` in Server Components | Post, comments, `[commentId]` pages |
+| 1 | ✅ | Async `params` (Promise) | `await params` in Server Components | Inside `<Suspense>` children on dynamic pages; sync page shells pass `params` Promise — verified Vercel build **2026-11-13** |
 | 1 | ✅ | `Link` navigation | Client-side transitions between routes | List → detail → comments → comment |
 | 1 | ✅ | Root `layout.tsx` | Shared HTML shell, fonts, global CSS | `app/layout.tsx` — fonts + `<body>{children}</body>` (no duplicate `<main>`) |
 | 1 | ✅ | Static `metadata` | Root title/description | `export const metadata` in `app/layout.tsx` |
@@ -203,7 +221,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 1 | ✅ | `not-found.tsx` | Segment-specific 404 UI | Posts, comment segments; docs + archive; `/posts/600`, `/posts/1/comments/9999` (2026-11-12) |
 | 1 | ✅ | `not-found` vs React import | Framework convention, not a normal import | Learned; comment segment UIs avoid invalid `params` usage |
 | 1 | ✅ | `loading.tsx` | Instant fallback while segment loads | Four files under `app/(main)/posts/`: `loading.tsx`, `[postsId]/loading.tsx`, `comments/loading.tsx`, `comments/[commentId]/loading.tsx`; verified screenshots 2026-11-12 |
-| 1 | ✅ | `<Suspense>` boundaries | Split slow data; works with `cacheComponents` | `[postsId]/page.tsx` + `comments/page.tsx`; `PostDetailContent`, `CommentsList`, skeletons under `components/`; verified `/posts/1`, `/posts/1/comments` (2026-11-13) |
+| 1 | ✅ | `<Suspense>` boundaries | Split slow data; works with `cacheComponents` | **Option B:** sync `page.tsx` + `*PageContent` async child; posts tree, docs, archive, posts index; `PostDetailContent`, `CommentsList`, skeletons; **Vercel** + local `npm run start` **2026-11-13** |
 | 1 | ✅ | `error.tsx` | Recoverable runtime errors (Client Component) | `app/(main)/posts/error.tsx` — list failure, `reset`, nav + breadcrumb; 404 stays on `not-found.tsx` |
 | 1 | ✅ | Comment detail validation | 404 when comment missing or wrong `postId`; missing post → redirect | `/posts/1/comments/9999`; `/posts/600/comments/*` → redirect → post not-found |
 | 1 | ⬜ | Global `not-found` | `app/not-found.tsx` for unknown routes | Not added |
@@ -216,7 +234,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 | Pts | Status | Topic | What to learn | Evidence in repo / notes |
 |----:|:------:|-------|---------------|---------------------------|
-| 1 | ✅ | `cacheComponents` / dev cache UX | Runtime data vs prerender; dev overlay | Dev only (`!(GITHUB_ACTIONS)`); disabled on static export build |
+| 1 | ✅ | `cacheComponents` / dev cache UX | Runtime data vs prerender; dev overlay | Enabled on Vercel/`npm run build` (`!(GITHUB_ACTIONS)`); **blocking-prerender** fixed via Suspense; off on `build:gh-pages` |
 | 1 | ⬜ | `fetch` cache options | `cache`, `next.revalidate` | Default fetch in `apiGet` |
 | 1 | ⬜ | Tagged revalidation | `revalidateTag` / cache tags (per Next 16 docs) | |
 | 1 | ⬜ | `generateMetadata` | Per-post title, OG fields | Browser tab still generic “Create Next App” on `/posts/2` |
@@ -319,7 +337,8 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | S4 | GitHub Actions + Pages (JSONPlaceholder build-time fetch) | M5 | ✅ **2026-11-13** — **https://abdul-samad-ttn.github.io/next_js_bench_task/** |
 | S5 | Client component exercise; optional Route Handlers locally | M6 | ⬜ |
 | S6 | `.env.example` + CI lint/typecheck | M8, M5 | ⬜ *(console.log ✅)* |
-| S7 | Add comment form: client actions, modal intercept, validation, POST | M9 | 🔶 **2026-11-13** — client path ✅; Server Action + `revalidatePath` ⬜ |
+| S7 | Add comment form: client actions, modal intercept, validation, POST | M9 | ✅ **2026-11-13** — client path + modal on dev/Vercel; Server Action + `revalidatePath` ⬜ |
+| S7b | Vercel hosted Next (`main`, Option B, production smoke) | M4, M5 | ✅ **2026-11-13** — **Create Deployment** on `main`; posts/docs/comments on **vercel.app** |
 
 ---
 
@@ -366,6 +385,7 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 | 2026-11-13 | — | S3 static export | `generateStaticParams` (posts, comments, docs, archive); export config; `cacheComponents` off on GHP build; local `build:gh-pages` | **+4** → **36** ✅ (M5 rows: export, params, build-time fetch, basePath) |
 | 2026-11-13 | — | S4 GitHub Pages | `deploy-pages.yml`; merge `main`; Pages → GitHub Actions; production smoke test posts + comments | **+2** → **38** ✅ (+1 M5 deploy, +1 M4 `generateStaticParams`) |
 | 2026-11-13 | ~3h | S7 forms + intercept modal | `CommentsForm` + `useActionState`/`useFormStatus`; `createComment`/`apiPost`; parallel `@modal` + `(.)comments/new`; toast; modal close on success | **+8** → **46** ✅ (+1 M1 intercept, +2 M6 client, +5 M9 form rows) |
+| 2026-11-13 | ~2h | S7b Vercel + Option B | Suspense wrappers on dynamic routes; fix branch deploy (`main` not `api_and_dynamic_routing`); Vercel Production smoke: home, posts, post detail, comments, docs | evidence only (no new checklist pts) |
 | | | | | |
 
 ---
@@ -374,21 +394,22 @@ You can parallelize M8 housekeeping anytime; finish M3 before leaning hard into 
 
 | Area | Status |
 |------|--------|
-| **Working demo** | ✅ **Dev** — full posts/comments flow + **add comment** (list + intercept modal + full `/comments/new`) |
-| **Production GHP** | ✅ posts/comments/docs/archive; 🔶 re-verify **`build:gh-pages`** includes `comments/new` + modal routes after latest form work |
+| **Working demo** | ✅ **Dev** + ✅ **Vercel** — posts/comments/docs/archive; add comment (list + intercept modal + `/comments/new`) |
+| **Production Vercel** | ✅ **`main`** deploy **2026-11-13** — **https://next-js-bench-task-blush.vercel.app**; use **Create Deployment** on `main`, not old `api_and_dynamic_routing` redeploys |
+| **Production GHP** | ✅ posts/comments/docs/archive; 🔶 `build:gh-pages` — **remove or gate** `@modal/(.)…` intercept for export; modal = Vercel-only unless client-only workaround |
 | **Strongest modules** | ✅ **M1**, **M2**, **M7** complete; M9 (**5/6**), M3 (**7/8**), M5 (**5/7**) |
-| **In progress** | 🔶 S7 — Server Action row optional; GHP smoke for client POST |
+| **In progress** | 🔶 GHP export vs Vercel feature split; optional Vercel env audit |
 | **Biggest gaps** | ⬜ M9 Server Action, M3 global not-found, M4 metadata/caching, M5 `ci.yml` + `.env.example` |
 | **Score** | **46 / 57 (81%)** |
-| **Planned next feature** | **S6** CI lint · **`app/not-found.tsx`** · optional Server Action on `npm run dev` only |
+| **Planned next feature** | **S6** CI lint · **`app/not-found.tsx`** · GHP build policy for intercept routes |
 
 **Repo layout (2026-11-13):** Above + `components/comments/forms/commentsForm/*`, `components/modalCloseButton/`, `[postsId]/layout.tsx` + `@modal/`, `react-hot-toast`.
 
 **Next 3 actions (recommended):**
 
-1. **S6** — `ci.yml` (`npm run lint` + `build:gh-pages` on PR) + `.env.example` (`API_BASE_URL`, `NEXT_PUBLIC_API_BASE_URL`).
+1. **S6** — `ci.yml` (`npm run lint` + `npm run build` on PR for Vercel parity; optional `build:gh-pages` job) + `.env.example`.
 2. **M3** — `app/not-found.tsx` for unknown top-level routes.
-3. **`build:gh-pages` + GHP** — confirm add-comment full page + client POST from production URL (modal intercept is dev soft-nav only).
+3. **M5 GHP** — document or script: Vercel = full app; GHP = static export **without** intercept routes; re-run `build:gh-pages` after any route change.
 
 **Later (unchanged):** **S2** — `generateMetadata` on post page so tab title matches post (e.g. “qui est esse” on `/posts/2`).
 
